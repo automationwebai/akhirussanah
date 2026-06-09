@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buku Tamu Keluarga - TK Izzati 1</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FFE5EC 0%, #FFF9E6 50%, #E8FDF5 100%);
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -19,75 +20,89 @@
             background: white;
             border-radius: 30px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(255, 107, 139, 0.15);
+            border: 4px solid #FFF;
         }
-        h1 { color: #667eea; text-align: center; margin-bottom: 5px; }
-        .sub { text-align: center; color: #666; margin-bottom: 30px; font-style: italic; }
-        label { font-weight: bold; display: block; margin: 15px 0 5px 0; color: #333; }
+        h1 { color: #FF6B8B; text-align: center; margin-bottom: 5px; font-weight: 800; }
+        .sub { text-align: center; color: #777; margin-bottom: 30px; font-style: italic; font-weight: 600; }
+        label { font-weight: bold; display: block; margin: 15px 0 5px 0; color: #555; }
         select, input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #FFD6DC;
             border-radius: 15px;
             font-size: 16px;
+            font-family: 'Nunito', sans-serif;
+            color: #333;
+            background-color: #FFF;
         }
-        select:focus, input:focus { outline: none; border-color: #667eea; }
+        select:focus, input:focus { outline: none; border-color: #FF6B8B; box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.2); }
         .member-card {
-            background: #f8f9ff;
+            background: #FFF9FA;
             padding: 15px;
             border-radius: 20px;
             margin: 15px 0;
-            border-left: 5px solid #667eea;
+            border-left: 5px solid #FF8E53;
+            border-right: 1px solid #FFECEF;
+            border-top: 1px solid #FFECEF;
+            border-bottom: 1px solid #FFECEF;
         }
-        .member-card label { margin-top: 0; font-size: 14px; color: #667eea; }
+        .member-card label { margin-top: 0; font-size: 14px; color: #FF6B8B; }
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF6B8B 0%, #FF8E53 100%);
             color: white;
             border: none;
             padding: 15px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 800;
             border-radius: 15px;
             cursor: pointer;
             width: 100%;
             margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(255, 107, 139, 0.3);
+            transition: all 0.2s ease;
         }
-        button:hover { transform: scale(1.02); }
+        button:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(255, 107, 139, 0.4); }
         .success {
-            background: #4CAF50;
+            background: #6BCB77;
             color: white;
             padding: 15px;
             border-radius: 15px;
             margin-top: 20px;
             display: none;
             text-align: center;
+            font-weight: 700;
         }
         .error {
-            background: #f44336;
+            background: #FF6B6B;
             color: white;
             padding: 15px;
             border-radius: 15px;
             margin-top: 20px;
             display: none;
             text-align: center;
+            font-weight: 700;
         }
         .info {
-            background: #e3f2fd;
-            padding: 10px;
-            border-radius: 10px;
+            background: #E8F0FE;
+            color: #1a73e8;
+            padding: 12px;
+            border-radius: 15px;
             font-size: 14px;
             margin-bottom: 20px;
             text-align: center;
+            border-left: 5px solid #1a73e8;
         }
         .badge {
             display: inline-block;
-            background: #667eea;
+            background: #FF6B8B;
             color: white;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 700;
         }
-        hr { margin: 20px 0; }
+        hr { border: 0; border-top: 2px dashed #FFD6DC; margin: 20px 0; }
         @media (max-width: 480px) {
             body {
                 padding: 10px;
@@ -201,6 +216,12 @@
         
         if (daftarNama.length === 0) {
             alert('❌ Minimal isi 1 nama anggota keluarga!');
+            return;
+        }
+
+        // Konfirmasi sebelum menyimpan
+        const konfirmasi = confirm(`Apakah nama-nama yang diisi sudah benar?\n\n- Nama Siswa: ${namaSiswa}\n- Kelas: ${kelasSiswa}\n- Anggota Keluarga: ${daftarNama.join(', ')}`);
+        if (!konfirmasi) {
             return;
         }
         
