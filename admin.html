@@ -55,6 +55,38 @@
             border-radius: 20px;
             font-size: 11px;
         }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+            /* Allow name column to wrap if it is too long */
+            td:nth-child(2) {
+                white-space: normal;
+                word-break: break-word;
+                min-width: 120px;
+            }
+            .total {
+                font-size: 15px;
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -62,12 +94,14 @@
     <h2>📋 Daftar Tamu Tasyakuran & Akhirussanah</h2>
     <p style="color: gray;">📌 Setiap baris = satu orang (bisa berasal dari keluarga yang sama)</p>
     
-    <table id="tabelTamu">
-        <thead>
-            <tr><th>No</th><th>Nama</th><th>Waktu</th><th>Keterangan</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div class="table-container">
+        <table id="tabelTamu">
+            <thead>
+                <tr><th>No</th><th>Nama</th><th>Waktu</th><th>Keterangan</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
     <div class="total" id="totalTamu"></div>
 </div>
 
