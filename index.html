@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Tamu Keluarga - TK Izzati 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #667eea; text-align: center; margin-bottom: 5px; }
+        .sub { text-align: center; color: #666; margin-bottom: 30px; font-style: italic; }
+        label { font-weight: bold; display: block; margin: 15px 0 5px 0; color: #333; }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+        }
+        select:focus, input:focus { outline: none; border-color: #667eea; }
+        .member-card {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #667eea;
+        }
+        .member-card label { margin-top: 0; font-size: 14px; color: #667eea; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover { transform: scale(1.02); }
+        .success {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        hr { margin: 20px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>📖 Buku Tamu Keluarga</h1>
+        <div class="sub">Tasyakuran & Akhirussanah<br>KB TK Izzati 1</div>
+        
+        <div class="info">
+            🏠 <strong>Satu keluarga cukup sekali isi</strong><br>
+            Isi nama semua anggota yang hadir
+        </div>
+
+        <label>👨‍👩‍👧‍👦 Jumlah anggota keluarga yang hadir:</label>
+        <select id="jumlahAnggota" onchange="ubahFormKeluarga()">
+            <option value="1">1 orang</option>
+            <option value="2" selected>2 orang</option>
+            <option value="3">3 orang</option>
+            <option value="4">4 orang</option>
+            <option value="5">5 orang</option>
+            <option value="6">6 orang</option>
+            <option value="7">7 orang</option>
+            <option value="8">8 orang</option>
+            <option value="9">9 orang</option>
+            <option value="10">10 orang</option>
+        </select>
+
+        <div id="formAnggota"></div>
+
+        <button onclick="simpanKeluarga()">
+            💾 Simpan Semua Anggota Keluarga
+        </button>
+
+        <div id="successMsg" class="success"></div>
+        <div id="errorMsg" class="error"></div>
+        
+        <hr>
+        <div class="badge">✨ Satu klik untuk satu keluarga ✨</div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://yzlhksxdknordyjktvix.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bGhrc3hka25vcmR5amt0dml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDI3NjksImV4cCI6MjA5NjU3ODc2OX0.Uom77BnGfOV_RCYpZZU72P1G5-6Fa_FnDBXnsHBXPu4";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function ubahFormKeluarga() {
+        const jumlah = parseInt(document.getElementById('jumlahAnggota').value);
+        const container = document.getElementById('formAnggota');
+        container.innerHTML = '';
+        
+        for (let i = 1; i <= jumlah; i++) {
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'member-card';
+            memberDiv.innerHTML = `
+                <label>👤 Anggota ke-${i}</label>
+                <input type="text" id="nama_${i}" placeholder="Nama lengkap..." autocomplete="off">
+            `;
+            container.appendChild(memberDiv);
+        }
+    }
+
+    ubahFormKeluarga();
+
+    async function simpanKeluarga() {
+        const jumlah = parseInt(document.getElementById('jumlahAnggota').value);
+        const daftarNama = [];
+        
+        for (let i = 1; i <= jumlah; i++) {
+            const namaInput = document.getElementById(`nama_${i}`);
+            if (namaInput && namaInput.value.trim() !== '') {
+                daftarNama.push(namaInput.value.trim());
+            }
+        }
+        
+        if (daftarNama.length === 0) {
+            alert('❌ Minimal isi 1 nama anggota keluarga!');
+            return;
+        }
+        
+        const dataToInsert = daftarNama.map(nama => ({ nama: nama }));
+        
+        const { data, error } = await supabaseClient
+            .from('tamu')
+            .insert(dataToInsert);
+        
+        if (error) {
+            console.error(error);
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = '❌ Gagal menyimpan. Silakan coba lagi.';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        } else {
+            const successDiv = document.getElementById('successMsg');
+            successDiv.style.display = 'block';
+            successDiv.innerHTML = `✅ Berhasil! ${daftarNama.length} anggota keluarga sudah tercatat.<br>Terima kasih 🙏`;
+            
+            for (let i = 1; i <= jumlah; i++) {
+                const namaInput = document.getElementById(`nama_${i}`);
+                if (namaInput) namaInput.value = '';
+            }
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 4000);
+        }
+    }
+</script>
+</body>
+</html>

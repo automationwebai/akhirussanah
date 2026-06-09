@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Daftar Tamu Keluarga</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f8f9ff;
+        }
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .group-badge {
+            background: #764ba2;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📋 Daftar Tamu Tasyakuran & Akhirussanah</h2>
+    <p style="color: gray;">📌 Setiap baris = satu orang (bisa berasal dari keluarga yang sama)</p>
+    
+    <table id="tabelTamu">
+        <thead>
+            <tr><th>No</th><th>Nama</th><th>Waktu</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="total" id="totalTamu"></div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://yzlhksxdknordyjktvix.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bGhrc3hka25vcmR5amt0dml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDI3NjksImV4cCI6MjA5NjU3ODc2OX0.Uom77BnGfOV_RCYpZZU72P1G5-6Fa_FnDBXnsHBXPu4";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadTamu() {
+        const { data, error } = await supabaseClient
+            .from('tamu')
+            .select('*')
+            .order('waktu', { ascending: false });
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        const tbody = document.querySelector('#tabelTamu tbody');
+        tbody.innerHTML = '';
+        
+        // Cek waktu antar tamu untuk grouping (opsional)
+        data.forEach((tamu, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerHTML = `<strong>${tamu.nama}</strong>`;
+            row.insertCell(2).innerText = new Date(tamu.waktu).toLocaleString('id-ID');
+            
+            // Cek apakah nama ini datang bersamaan dengan nama lain (dalam 2 menit)
+            let isGroup = false;
+            if (idx > 0) {
+                const prevTime = new Date(data[idx-1].waktu);
+                const currTime = new Date(tamu.waktu);
+                const diffMs = currTime - prevTime;
+                if (diffMs < 120000) { // kurang dari 2 menit
+                    isGroup = true;
+                }
+            }
+            
+            const groupCell = row.insertCell(3);
+            if (isGroup) {
+                groupCell.innerHTML = '<span class="group-badge">👨‍👩‍👧‍👦 Satu keluarga</span>';
+            } else {
+                groupCell.innerHTML = '-';
+            }
+        });
+        
+        document.getElementById('totalTamu').innerHTML = `✅ Total individu yang hadir: ${data.length} orang`;
+    }
+
+    loadTamu();
+</script>
+</body>
+</html>
