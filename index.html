@@ -113,6 +113,19 @@
             Isi nama semua anggota yang hadir
         </div>
 
+        <label for="namaSiswa">👶 Nama Siswa (Anak):</label>
+        <input type="text" id="namaSiswa" placeholder="Nama anak..." autocomplete="off">
+
+        <label for="kelasSiswa">🏫 Kelas / Kelompok:</label>
+        <select id="kelasSiswa">
+            <option value="" disabled selected>Pilih kelas...</option>
+            <option value="Shafa">Shafa</option>
+            <option value="Marwah">Marwah</option>
+            <option value="Madinah">Madinah</option>
+            <option value="Makkah">Makkah</option>
+            <option value="Undang/umum">Undang/umum</option>
+        </select>
+
         <label>👨‍👩‍👧‍👦 Jumlah anggota keluarga yang hadir:</label>
         <select id="jumlahAnggota" onchange="ubahFormKeluarga()">
             <option value="1">1 orang</option>
@@ -165,9 +178,20 @@
     ubahFormKeluarga();
 
     async function simpanKeluarga() {
+        const namaSiswa = document.getElementById('namaSiswa').value.trim();
+        const kelasSiswa = document.getElementById('kelasSiswa').value;
         const jumlah = parseInt(document.getElementById('jumlahAnggota').value);
         const daftarNama = [];
         
+        if (namaSiswa === '') {
+            alert('❌ Mohon isi Nama Siswa (Anak)!');
+            return;
+        }
+        if (!kelasSiswa) {
+            alert('❌ Mohon pilih Kelas / Kelompok!');
+            return;
+        }
+
         for (let i = 1; i <= jumlah; i++) {
             const namaInput = document.getElementById(`nama_${i}`);
             if (namaInput && namaInput.value.trim() !== '') {
@@ -180,7 +204,11 @@
             return;
         }
         
-        const dataToInsert = daftarNama.map(nama => ({ nama: nama }));
+        const dataToInsert = daftarNama.map(nama => ({ 
+            nama: nama,
+            nama_siswa: namaSiswa,
+            kelas: kelasSiswa
+        }));
         
         const { data, error } = await supabaseClient
             .from('tamu')
@@ -199,6 +227,9 @@
             successDiv.style.display = 'block';
             successDiv.innerHTML = `✅ Berhasil! ${daftarNama.length} anggota keluarga sudah tercatat.<br>Terima kasih 🙏`;
             
+            // Kosongkan form
+            document.getElementById('namaSiswa').value = '';
+            document.getElementById('kelasSiswa').selectedIndex = 0;
             for (let i = 1; i <= jumlah; i++) {
                 const namaInput = document.getElementById(`nama_${i}`);
                 if (namaInput) namaInput.value = '';

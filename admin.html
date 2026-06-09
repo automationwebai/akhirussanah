@@ -108,7 +108,7 @@
                 white-space: nowrap;
             }
             /* Allow name column to wrap if it is too long */
-            td:nth-child(2) {
+            td:nth-child(2), td:nth-child(4) {
                 white-space: normal;
                 word-break: break-word;
                 min-width: 120px;
@@ -133,7 +133,7 @@
     <div class="table-container">
         <table id="tabelTamu">
             <thead>
-                <tr><th>No</th><th>Nama</th><th>Waktu</th><th>Keterangan</th></tr>
+                <tr><th>No</th><th>Nama Siswa (Anak)</th><th>Kelas</th><th>Nama Pengunjung (Keluarga)</th><th>Waktu</th><th>Keterangan</th></tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -164,8 +164,10 @@
         data.forEach((tamu, idx) => {
             const row = tbody.insertRow();
             row.insertCell(0).innerText = idx + 1;
-            row.insertCell(1).innerHTML = `<strong>${tamu.nama}</strong>`;
-            row.insertCell(2).innerText = new Date(tamu.waktu).toLocaleString('id-ID');
+            row.insertCell(1).innerHTML = `<strong>${tamu.nama_siswa || '-'}</strong>`;
+            row.insertCell(2).innerText = tamu.kelas || '-';
+            row.insertCell(3).innerText = tamu.nama;
+            row.insertCell(4).innerText = new Date(tamu.waktu).toLocaleString('id-ID');
             
             // Cek apakah nama ini datang bersamaan dengan nama lain (dalam 2 menit)
             let isGroup = false;
@@ -178,7 +180,7 @@
                 }
             }
             
-            const groupCell = row.insertCell(3);
+            const groupCell = row.insertCell(5);
             if (isGroup) {
                 groupCell.innerHTML = '<span class="group-badge">👨‍👩‍👧‍👦 Satu keluarga</span>';
             } else {
